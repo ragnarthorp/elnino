@@ -183,7 +183,6 @@
 
   <main>
     <h1 class="brand">Úllónolló <span>–</span> Eðlisfræðismiðja</h1>
-    <p class="subtitle">Verkefnalýsing</p>
 
     <section id="countdown-view" class="card">
       <p class="label">Við byrjum eftir:</p>
@@ -194,6 +193,7 @@
 
     <section id="video-view">
       <div class="video-frame" id="video-frame"></div>
+      <button id="next" class="start-now" type="button">Áfram</button>
     </section>
   </main>
 
@@ -244,6 +244,9 @@
     showVideo();
   }
   document.getElementById("start-now").addEventListener("click", finish);
+
+  // Áfram: næsta skref verður sett hér inn
+  document.getElementById("next").addEventListener("click", () => {});
 
   function tick() {
     if (done) return;
