@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Úllónolló – Eðlisfræðismiðja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky-top: #0b1033;
+    --sky-mid: #1a1f5c;
+    --sky-low: #3b2a7a;
+    --pink: #ff5e8a;
+    --orange: #ffa63d;
+    --yellow: #ffd84d;
+    --teal: #2fd6c3;
+    --blue: #3fa9ff;
+    --ink: #ffffff;
+    --ink-soft: #c9d2ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: "Nunito", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
+  }
+
+  /* ---------- Bakgrunnur: stjörnur og plánetur ---------- */
+  #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .star {
+    position: absolute; border-radius: 50%; background: #fff;
+    animation: twinkle var(--d) ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+  @keyframes twinkle { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+
+  .scene { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  .scene svg { position: absolute; }
+  .planet-big { width: min(46vw, 420px); right: -8vw; bottom: -10vw; animation: float 14s ease-in-out infinite; }
+  .planet-small { width: min(18vw, 150px); left: 6vw; top: 10vh; animation: float 10s ease-in-out infinite reverse; }
+  .atom { width: min(20vw, 160px); left: 8vw; bottom: 8vh; animation: spin 30s linear infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Efni ---------- */
+  main {
+    position: relative; z-index: 2;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 16px;
+    text-align: center;
+  }
+  .brand {
+    font-family: "Baloo 2", sans-serif; font-weight: 800;
+    font-size: clamp(2rem, 6vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: .5px;
+    text-shadow: 0 6px 0 rgba(0,0,0,.25);
+  }
+  .brand span { color: var(--yellow); }
+  .subtitle {
+    margin-top: 8px;
+    font-family: "Baloo 2", sans-serif; font-weight: 600;
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    color: var(--teal);
+  }
+
+  .card {
+    margin-top: 40px;
+    padding: 28px 40px 36px;
+    border-radius: 32px;
+    background: rgba(255,255,255,.07);
+    border: 3px solid rgba(255,255,255,.12);
+    box-shadow: 0 20px 0 rgba(0,0,0,.18);
+    backdrop-filter: blur(4px);
+    max-width: 100%;
+  }
+  .label {
+    font-family: "Baloo 2", sans-serif; font-weight: 600;
+    font-size: clamp(1.2rem, 3.5vw, 2rem);
+    color: var(--ink-soft);
+  }
+  .timer {
+    font-family: "Baloo 2", sans-serif; font-weight: 800;
+    font-size: clamp(5rem, 22vw, 12rem);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, var(--yellow), var(--orange) 60%, var(--pink));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 8px 0 rgba(0,0,0,.25));
+  }
+  .timer.pulse { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+  .progress {
+    margin-top: 18px; height: 14px; border-radius: 99px;
+    background: rgba(255,255,255,.12); overflow: hidden;
+  }
+  .progress > div {
+    height: 100%; width: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--teal), var(--blue));
+    transition: width 1s linear;
+  }
+
+  /* ---------- Myndband ---------- */
+  #video-view { display: none; }
+  #video-view.show { display: flex; flex-direction: column; align-items: center; animation: pop .7s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
+  .video-frame {
+    margin-top: 20px;
+    height: min(62vh, 640px);
+    aspect-ratio: 9 / 16;
+    max-width: 100%;
+    border-radius: 28px; overflow: hidden;
+    border: 6px solid var(--yellow);
+    box-shadow: 0 18px 0 rgba(0,0,0,.25);
+    background: #000;
+  }
+  .video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .next {
+    margin-top: 24px;
+    font-family: "Baloo 2", sans-serif; font-weight: 800;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    line-height: 1.15;
+  }
+  .next .a { color: var(--pink); }
+  .next .b { display: block; color: var(--teal); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div id="stars"></div>
+
+  <div class="scene" aria-hidden="true">
+    <!-- Lítil pláneta -->
+    <svg class="planet-small" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="40" fill="#ff5e8a"/>
+      <path d="M14 40 Q50 30 86 44 L88 54 Q50 42 12 52 Z" fill="#ff8aa9"/>
+      <circle cx="36" cy="66" r="7" fill="#d9436d"/>
+      <circle cx="62" cy="26" r="4" fill="#d9436d"/>
+      <path d="M50 10 A40 40 0 0 1 50 90 A30 40 0 0 0 50 10" fill="rgba(0,0,0,.15)"/>
+    </svg>
+
+    <!-- Stór pláneta með hring -->
+    <svg class="planet-big" viewBox="0 0 200 200">
+      <ellipse cx="100" cy="104" rx="96" ry="22" fill="none" stroke="#ffd84d" stroke-width="7" opacity=".9"/>
+      <circle cx="100" cy="100" r="66" fill="#3fa9ff"/>
+      <path d="M40 80 Q100 64 160 82 L164 96 Q100 80 36 96 Z" fill="#6cc0ff"/>
+      <path d="M38 118 Q100 104 162 120 L158 134 Q100 120 44 134 Z" fill="#2b86d6"/>
+      <circle cx="122" cy="70" r="9" fill="#2b86d6"/>
+      <path d="M100 34 A66 66 0 0 1 100 166 A50 66 0 0 0 100 34" fill="rgba(0,0,0,.15)"/>
+      <path d="M4 104 A96 22 0 0 0 196 104" fill="none" stroke="#ffd84d" stroke-width="7"/>
+    </svg>
+
+    <!-- Atóm -->
+    <svg class="atom" viewBox="0 0 100 100">
+      <g fill="none" stroke="#2fd6c3" stroke-width="3.5">
+        <ellipse cx="50" cy="50" rx="44" ry="15"/>
+        <ellipse cx="50" cy="50" rx="44" ry="15" transform="rotate(60 50 50)"/>
+        <ellipse cx="50" cy="50" rx="44" ry="15" transform="rotate(120 50 50)"/>
+      </g>
+      <circle cx="50" cy="50" r="9" fill="#ffa63d"/>
+      <circle cx="94" cy="50" r="4.5" fill="#ffd84d"/>
+      <circle cx="28" cy="88" r="4.5" fill="#ffd84d"/>
+      <circle cx="28" cy="12" r="4.5" fill="#ffd84d"/>
+    </svg>
+  </div>
+
+  <main>
+    <h1 class="brand">Úllónolló <span>–</span> Eðlisfræðismiðja</h1>
+    <p class="subtitle">Verkefnalýsing</p>
+
+    <section id="countdown-view" class="card">
+      <p class="label">Við byrjum eftir:</p>
+      <div id="timer" class="timer" role="timer" aria-live="off">2:00</div>
+      <div class="progress"><div id="bar"></div></div>
+    </section>
+
+    <section id="video-view">
+      <div class="video-frame" id="video-frame"></div>
+      <p class="next"><span class="a">Áfram.</span> <span class="b">Forritum meira á eftir.</span></p>
+    </section>
+  </main>
+
+<script>
+  // Stjörnur
+  (function () {
+    const box = document.getElementById("stars");
+    const n = Math.round(window.innerWidth * window.innerHeight / 9000);
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("div");
+      const size = Math.random() < 0.85 ? 2 : 4;
+      s.className = "star";
+      s.style.cssText =
+        `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;` +
+        `--d:${2 + Math.random()*4}s;--delay:${-Math.random()*6}s`;
+      box.appendChild(s);
+    }
+  })();
+
+  // Niðurteljari (hægt að prófa styttri tíma með ?s=5)
+  const VIDEO_ID = "N2FOxjtv5ns";
+  const param = parseInt(new URLSearchParams(location.search).get("s"), 10);
+  const TOTAL = Number.isFinite(param) && param >= 0 ? param : 120;
+  const end = Date.now() + TOTAL * 1000;
+
+  const timerEl = document.getElementById("timer");
+  const bar = document.getElementById("bar");
+
+  function fmt(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${String(s).padStart(2, "0")}`;
+  }
+
+  function showVideo() {
+    document.getElementById("countdown-view").style.display = "none";
+    document.getElementById("video-frame").innerHTML =
+      `<iframe src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&playsinline=1&rel=0"
+        title="Myndband" allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+        allowfullscreen></iframe>`;
+    document.getElementById("video-view").classList.add("show");
+  }
+
+  function tick() {
+    const left = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+    timerEl.textContent = fmt(left);
+    bar.style.width = (TOTAL ? left / TOTAL * 100 : 0) + "%";
+    timerEl.classList.toggle("pulse", left <= 10 && left > 0);
+    if (left === 0) { showVideo(); return; }
+    setTimeout(tick, 250);
+  }
+  tick();
+</script>
+</body>
+</html>
